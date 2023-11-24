@@ -1,0 +1,24 @@
+[package]
+name = "leptos_csr_template"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+leptos = { version = "0.5.2", features = ["csr"] }
+log = "0.4"
+console_log = "1"
+console_error_panic_hook = "0.1.7"
+leptos_router = { version = "0.5.2", features = ["csr"] }
+# leptos-use = "0.8.2"
+# wasm-bindgen = "0.2.88"
+# web-sys = "0.3.65"
+# js-sys = "0.3.65"
+# uuid = { version = "1", features = ["v4", "js", "fast-rng", "serde"] }
+# serde = { version = "1", features = ["derive"] }
+
+[profile.release]
+codegen-units = 1
+opt-level = 'z'
+lto = true

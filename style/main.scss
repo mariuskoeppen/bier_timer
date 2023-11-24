@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:700|Poppins:400');
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+:root {
+    --font-body: 'Poppins', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+
+
+    --color-text: #180202;
+    --color-background: #fafafa;
+    --color-primary: #ff6d4d;
+    --color-secondary: #e6e6e5;
+    --color-accent: #d12600;
+
+    --color-dm-text: #fde7e7;
+    --color-dm-background: #050505;
+    --color-dm-primary: #b32100;
+    --color-dm-secondary: #1a1a19;
+    --color-dm-accent: #ff542e;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+    font-size: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: var(--font-body);
+    font-weight: 700;
+}
+
+h1 {
+    font-size: 4.210rem;
+    /* 67.36px */
+}
+
+h2 {
+    font-size: 3.158rem;
+    /* 50.56px */
+}
+
+h3 {
+    font-size: 2.369rem;
+    /* 37.92px */
+}
+
+h4 {
+    font-size: 1.777rem;
+    /* 28.48px */
+}
+
+h5 {
+    font-size: 1.333rem;
+    /* 21.28px */
+}
+
+small {
+    font-size: 0.750rem;
+    /* 12px */
+}
+
+body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
