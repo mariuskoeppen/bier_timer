@@ -1,5 +1,4 @@
-mod about;
 mod home;
 
-pub use self::{about::*, home::*};
+pub use self::home::*;
 

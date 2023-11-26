@@ -1,6 +1,6 @@
 #![allow(unused)]
+use bier_timer::*;
 use leptos::*;
-use leptos_csr_template::{utils::*, *};
 
 fn main() {
     _ = console_log::init_with_level(log::Level::Debug);
