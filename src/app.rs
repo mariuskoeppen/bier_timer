@@ -1,5 +1,6 @@
 use crate::helpers::*;
 use crate::pages::*;
+use chrono::DateTime;
 use chrono::{Duration, Local};
 use leptos::*;
 use leptos_router::*;
@@ -229,10 +230,11 @@ pub fn App() -> impl IntoView {
         move || {
             current_time_signal.set(Local::now());
         },
-        Duration::milliseconds(241) // Every roughly 1/4 second, prime number
+        Duration::milliseconds(997) // Every roughly 1/4 second, prime number
             .to_std()
             .expect("to convert to std::time::Duration"),
     );
+    provide_context(CurrentTime(current_time_signal));
 
     // Running timers
     let currently_running_timers = create_rw_signal::<Vec<TimerInfo>>(vec![]);
@@ -252,6 +254,9 @@ pub fn App() -> impl IntoView {
         </Router>
     }
 }
+
+#[derive(Clone)]
+pub struct CurrentTime(pub RwSignal<DateTime<Local>>);
 
 #[derive(Clone)]
 pub struct CurrentlyRunningTimers(pub RwSignal<Vec<TimerInfo>>);

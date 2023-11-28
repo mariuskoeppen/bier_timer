@@ -17,6 +17,10 @@ chrono = "0.4.31"
 # web-sys = "0.3.65"
 # js-sys = "0.3.65"
 uuid = { version = "1", features = ["v4", "js", "fast-rng", "serde"] }
+leptos_icons = { version = "0.1.0", features = [
+    "VsCircleLargeFilled",
+    "OcXSm",
+] }
 # serde = { version = "1", features = ["derive"] }
 
 [profile.release]

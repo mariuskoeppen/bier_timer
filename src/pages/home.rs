@@ -4,6 +4,7 @@ use crate::{
     TimerPreset,
 };
 use leptos::*;
+use leptos_icons::{Icon, OcIcon::OcXSm};
 
 #[component]
 pub fn Home(
@@ -35,13 +36,17 @@ pub fn Home(
                 <div class="running_timers_wrapper">
 
                     {move || {
-                        currently_running_timers
-                            .get()
-                            .iter()
-                            .map(|timer_info| {
-                                view! { <TimerTile timer=timer_info.clone()/> }
-                            })
-                            .collect_view()
+                        if currently_running_timers.get().len() == 0 {
+                            view! { <p>"Erstelle unten einen neuen Timer"</p> }.into_view()
+                        } else {
+                            currently_running_timers
+                                .get()
+                                .iter()
+                                .map(|timer_info| {
+                                    view! { <TimerTile timer=timer_info.clone()/> }
+                                })
+                                .collect_view()
+                        }
                     }}
 
                 </div>
@@ -72,11 +77,38 @@ pub fn Home(
                 <h3>"Weiterführende Informationen"</h3>
             </section>
         </main>
-        <dialog id="preset_modal" class:hidden=move || !modal_showing_signal.get()>
+        <div
+            id="preset_modal"
+            class:hidden=move || !modal_showing_signal.get()
+            on:click:undelegated=move |e| {
+                if e.target().expect("click target")
+                    != e.current_target().expect("click current target")
+                {
+                    leptos::logging::log!(
+                        "{:#?}, {:#?}", e.target().unwrap(), e.current_target().unwrap()
+                    );
+                    return;
+                }
+                modal_showing_signal.set(false);
+            }
+        >
+
             <div class="preset_modal_wrapper">
+                <div class="close_button button" on:click=move |_| modal_showing_signal.set(false)>
+                    <Icon icon=Icon::from(OcXSm)/>
+                </div>
                 <PresetSummary preset_signal=selected_preset_signal modal_showing_signal/>
             </div>
-        </dialog>
+        </div>
     }
 }
+
+// if e.target().expect("click target")
+//     != e.current_target().expect("click current target")
+// {
+//     leptos::logging::log!(
+//         "{:#?}, {:#?}", e.target().unwrap(), e.current_target().unwrap()
+//     );
+//     return;
+// }
 

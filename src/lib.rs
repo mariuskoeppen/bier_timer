@@ -7,28 +7,27 @@ pub use self::{app::App, helpers::*, pages::*};
 pub mod helpers {
     #![allow(unused)]
     use chrono::{DateTime, Duration, Local};
-    use leptos::{create_rw_signal, RwSignal, SignalUpdate};
+    use leptos::{create_rw_signal, RwSignal, Signal, SignalGet, SignalUpdate};
     use std::ops::{Add, Div, Sub};
     use uuid::Uuid;
 
     #[derive(Clone)]
     pub struct TimerInfo {
+        // frozen
+        // timed out?
         pub id: Uuid,
         pub timestamp_started: DateTime<Local>,
         pub timestamp_finished: DateTime<Local>,
-        // frozen
         pub drink: Drink,
-        // timed out?
         pub initial_ambience: Ambience,
         pub ambient_ambience: Ambience,
         pub target_ambience: Ambience,
-        // these should be derived signals
-        pub current_time_left: RwSignal<Duration>,
-        pub current_temperature: RwSignal<Temperature>,
+        pub current_time_left: Signal<Duration>,
+        pub current_temperature: Signal<Temperature>,
     }
 
     impl TimerInfo {
-        pub fn new(preset: TimerPreset) -> Self {
+        pub fn new(preset: TimerPreset, current_time_signal: RwSignal<DateTime<Local>>) -> Self {
             let start = Local::now();
             let finished = start
                 + time_until_temperature(
@@ -43,27 +42,33 @@ pub mod helpers {
                 timestamp_finished: finished,
                 drink: preset.drink.clone(),
                 initial_ambience: preset.initial_ambience.clone(),
-                ambient_ambience: preset.ambient_ambience,
+                ambient_ambience: preset.ambient_ambience.clone(),
                 target_ambience: preset.target_ambience,
-
-                current_time_left: create_rw_signal(finished - start),
-                current_temperature: create_rw_signal(preset.initial_ambience.temperature),
+                current_time_left: Signal::derive(move || finished - current_time_signal.get()),
+                current_temperature: Signal::derive(move || {
+                    temperature_after_time(
+                        current_time_signal.get() - start,
+                        preset.initial_ambience.temperature,
+                        &preset.drink,
+                        &preset.ambient_ambience,
+                    )
+                }),
             }
         }
 
-        pub fn update(&self, current_time: DateTime<Local>) {
-            self.current_time_left
-                .update(|time| *time = self.timestamp_finished - current_time);
-            let time_passed = current_time - self.timestamp_started;
-            self.current_temperature.update(|temperature| {
-                *temperature = temperature_after_time(
-                    time_passed,
-                    self.initial_ambience.temperature,
-                    &self.drink,
-                    &self.ambient_ambience,
-                )
-            });
-        }
+        // pub fn update(&self, current_time: DateTime<Local>) {
+        //     self.current_time_left
+        //         .update(|time| *time = self.timestamp_finished - current_time);
+        //     let time_passed = current_time - self.timestamp_started;
+        //     self.current_temperature.update(|temperature| {
+        //         *temperature = temperature_after_time(
+        //             time_passed,
+        //             self.initial_ambience.temperature,
+        //             &self.drink,
+        //             &self.ambient_ambience,
+        //         )
+        //     });
+        // }
     }
 
     #[derive(Clone)]
@@ -404,6 +409,20 @@ pub mod helpers {
         pub fn as_deg_celsius(&self) -> f64 {
             self.as_unit(TemperatureUnit::DegCelsius)
         }
+
+        pub fn format(&self, unit: TemperatureUnit, append_unit: bool) -> String {
+            let raw = match unit {
+                TemperatureUnit::DegCelsius => self.as_deg_celsius(),
+                TemperatureUnit::Kelvin => self.as_kelvin(),
+            };
+
+            let append = match unit {
+                TemperatureUnit::DegCelsius => " °C",
+                TemperatureUnit::Kelvin => " K",
+            };
+
+            format!("{:.0}{}", raw, append)
+        }
     }
 
     impl Add for Temperature {
@@ -466,7 +485,7 @@ pub mod helpers {
     // }
 
     pub fn linear_interpolate_ceil(x: f64, x0: f64, x1: f64, y0: f64, y1: f64) -> f64 {
-        linear_interpolate(x.clamp(x.min(x1), x0.max(x1)), x0, x1, y0, y1)
+        linear_interpolate(x.clamp(x0.min(x1), x0.max(x1)), x0, x1, y0, y1)
     }
 
     pub fn linear_interpolate(x: f64, x0: f64, x1: f64, y0: f64, y1: f64) -> f64 {
@@ -490,6 +509,25 @@ pub mod helpers {
         }
 
         format!("{:0>1}:{:0>2} hrs", hours, minutes)
+    }
+
+    pub fn format_chrono_duration_precise(duration: Duration) -> String {
+        if duration <= Duration::zero() {
+            return format!("0:00:00");
+        }
+        let seconds = duration.num_seconds() % 60;
+        let minutes = duration.num_minutes() % 60;
+        let hours = duration.num_hours() % 24;
+
+        if hours < 1 {
+            if minutes < 1 {
+                return format!("{:0>1}", seconds);
+            }
+
+            return format!("{:0>1}:{:0>2}", minutes, seconds);
+        }
+
+        format!("{:0>1}:{:0>2}:{:0>2}", hours, minutes, seconds)
     }
 
     pub fn format_chrono_duration_simple(duration: Duration) -> String {

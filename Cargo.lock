@@ -132,6 +132,7 @@ dependencies = [
  "console_error_panic_hook",
  "console_log",
  "leptos",
+ "leptos_icons",
  "leptos_router",
  "log",
  "uuid",
@@ -624,6 +625,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "icondata"
+version = "0.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f41f2deec9249d16ef6b1a8442fbe16013f67053797052aa0b7d2f5ebd0f0098"
+dependencies = [
+ "icondata_core",
+ "icondata_oc",
+ "icondata_vs",
+]
+
+[[package]]
+name = "icondata_core"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1640a4c1d5ddd08ab1d9854ffa7a2fa3dc52339492676b6d3031e77ca579f434"
+
+[[package]]
+name = "icondata_oc"
+version = "0.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "667cb0b74516ec3d4ce357b9ec94189eab6e1bfe5a4a28b5e36579028a8075b1"
+dependencies = [
+ "icondata_core",
+]
+
+[[package]]
+name = "icondata_vs"
+version = "0.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23b82ee337916a89f53d20656ff46fa1cbdeeb89e0f42283831301ed2a275cf3"
+dependencies = [
+ "icondata_core",
+]
+
+[[package]]
 name = "idna"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -779,6 +815,17 @@ dependencies = [
  "serde",
  "syn",
  "walkdir",
+]
+
+[[package]]
+name = "leptos_icons"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b3fad7820b18b983d49ff4262df88de94dc8fd993278937979cc0dd188868e5"
+dependencies = [
+ "icondata",
+ "leptos",
+ "tracing",
 ]
 
 [[package]]

@@ -1,5 +1,5 @@
 use crate::{
-    app::CurrentlyRunningTimers,
+    app::{CurrentTime, CurrentlyRunningTimers},
     helpers::{format_chrono_duration_simple, time_until_temperature, TimerPreset},
     TimerInfo,
 };
@@ -20,7 +20,7 @@ pub fn PresetSummary(
     });
 
     let currently_running_timers = expect_context::<CurrentlyRunningTimers>().0;
-
+    let current_time_signal = expect_context::<CurrentTime>().0;
     view! {
         <div class="preset_summary">
             <div class="summary">
@@ -65,7 +65,7 @@ pub fn PresetSummary(
             <button
                 class="start_timer_button button primary"
                 on:click=move |_| {
-                    let timer = TimerInfo::new(preset_signal.get());
+                    let timer = TimerInfo::new(preset_signal.get(), current_time_signal);
                     currently_running_timers.update(move |v| v.push(timer));
                     modal_showing_signal.set(false);
                 }
