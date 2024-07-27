@@ -1,8 +1,13 @@
 use leptos::*;
-use leptos_icons::{Icon, OcIcon::OcXSm, VsIcon::VsCircleLargeFilled};
+use leptos_icons::{
+    Icon,
+    OcIcon::{OcCheckSm, OcXSm},
+    VsIcon::VsCircleLargeFilled,
+};
 
 use crate::{
-    app::CurrentlyRunningTimers, format_chrono_duration_precise, linear_interpolate_ceil, TimerInfo,
+    app::CurrentlyRunningTimers, format_chrono_duration_precise, linear_interpolate_ceil,
+    timer_info::TimerInfo,
 };
 
 #[component]
@@ -21,8 +26,23 @@ pub fn TimerTile(timer: TimerInfo) -> impl IntoView {
             .round(),
         )
     });
+    let timer_tile_expanded = create_rw_signal(false);
+
     view! {
-        <div class="timer_tile">
+        <button
+            class="timer_tile"
+            class:expanded=move || timer_tile_expanded.get()
+            on:click=move |_ev| {
+                timer_tile_expanded
+                    .set(
+                        match timer_tile_expanded.get() {
+                            true => false,
+                            false => true,
+                        },
+                    );
+            }
+        >
+
             <div class="temp_display">
 
                 <style>
@@ -47,8 +67,21 @@ pub fn TimerTile(timer: TimerInfo) -> impl IntoView {
                     timer.current_temperature.get().format(crate::TemperatureUnit::DegCelsius, true)
                 })}
 
-                <span class="arrow">" / "</span>
-                {timer.target_ambience.temperature.format(crate::TemperatureUnit::DegCelsius, true)}
+                {move || {
+                    if timer.timer_finished.get() {
+                        None
+                    } else {
+                        Some(
+                            view! {
+                                <span class="arrow">" -> "</span>
+                                {timer
+                                    .target_ambience
+                                    .temperature
+                                    .format(crate::TemperatureUnit::DegCelsius, true)}
+                            },
+                        )
+                    }
+                }}
 
             </div>
             <div class="time_display">
@@ -59,19 +92,39 @@ pub fn TimerTile(timer: TimerInfo) -> impl IntoView {
             </div>
             <div class="controls">
                 <button
-                    class="cancel_timer_button danger"
+                    class="cancel_timer_button"
+                    class:danger=move || !timer.timer_finished.get()
                     on:click=move |_| {
                         currently_running_timers.update(|v| v.retain(|t| t.id != timer.id));
                     }
                 >
 
-                    <Icon icon=Icon::from(OcXSm)/>
+                    {create_memo(move |_| {
+                        if !timer.timer_finished.get() {
+                            view! { <Icon icon=Icon::from(OcXSm)/> }
+                        } else {
+                            view! { <Icon icon=Icon::from(OcCheckSm)/> }
+                        }
+                    })}
 
                 </button>
             </div>
-        </div>
+
+            <Show when=move || timer_tile_expanded.get() fallback=|| view! { "" }>
+                <div class="more_info">
+                    <p>
+                        "Timer created: "
+                        {move || timer.timestamp_started.naive_local().format("%H:%M").to_string()}
+                    </p>
+
+                    <p>
+                        "Timer finishes: "
+                        {move || timer.timestamp_finished.naive_local().format("%H:%M").to_string()}
+                    </p>
+                </div>
+            </Show>
+        </button>
     }
 }
 
 // "\u{1F5D9}"
-

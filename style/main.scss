@@ -99,10 +99,19 @@ body {
     background-color: var(--color-background);
     color: var(--color-text);
     padding: 1em;
+
+    display: flex;
+    justify-content: center;
+
+    @media screen and (max-width: 560px) {
+        justify-content: flex-start;
+    }
 }
 
-button,
-.button {
+button.button,
+.button,
+.cancel_timer_button {
+    all: unset;
     color: var(--color-text);
     background-color: var(--color-secondary);
     font: var(--font-body);
@@ -112,6 +121,7 @@ button,
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
+    text-align: center;
 
     // filter: brightness(95%);
     transition: all 200ms ease;
@@ -170,6 +180,10 @@ main {
     }
 }
 
+.main_content_container {
+    max-width: 75rem;
+}
+
 
 .running_timers_wrapper {
     display: flex;
@@ -178,10 +192,11 @@ main {
 
 
     .timer_tile {
+        all: unset;
         background-color: var(--color-text);
         color: var(--color-background);
         // border: 2px solid var(--color-text);
-        border-radius: 5rem;
+        border-radius: 2em;
         padding: 1em;
 
         display: grid;
@@ -191,6 +206,12 @@ main {
 
         box-shadow: 0 0 1em rgba(0 0 0 / 0.2);
 
+        transition: all 200ms ease;
+
+        &.expanded {
+            box-shadow: 0 0 1em rgba(0 0 0 / 0.5);
+        }
+
         .temp_display {
             font-size: .6em;
             // padding: 6px 12px;
@@ -199,11 +220,15 @@ main {
             display: flex;
             align-items: center;
 
+            justify-self: start;
+
             >.temp_circle {
                 margin-right: 1em;
                 filter: drop-shadow(0 0 6px var(--heat-color));
                 color: var(--heat-color);
                 // animation: glow 1s infinite alternate;
+                transition: all 200ms ease;
+                margin-left: 12px;
             }
 
             >span.arrow {
@@ -228,14 +253,17 @@ main {
             font-family: var(--font-mono);
             font-weight: bold;
             font-size: 1.2em;
-
-
         }
 
         .controls {
             display: flex;
             justify-content: flex-end;
             width: 100%;
+        }
+
+        .more_info {
+            grid-area: 2 / 1 / 2 / 4;
+            font-size: 1rem;
         }
     }
 
@@ -248,12 +276,12 @@ main {
 }
 
 .cancel_timer_button {
-    background-color: var(--color-primary);
-    color: var(--color-accent);
+    background-color: #ccc;
+    color: var(--color-background);
     border: none;
     border-radius: 100%;
-    width: 1.5em;
-    height: 1.5em;
+    width: 2em;
+    height: 2em;
     text-align: center;
     padding: 0;
     font-size: 1em;
@@ -411,16 +439,18 @@ main {
                 height: 3rem;
                 width: 3rem;
                 padding: 6px;
-                background-color: var(--color-text);
+                background-color: var(--color-secondary);
                 color: var(--color-background);
                 border-radius: calc(var(--border-radius) / 2);
 
                 display: flex;
-                justify-content: center;
+                justify-content: flex-end;
                 align-items: center;
 
                 font-family: var(--font-mono);
                 font-size: 12px;
+
+                color: var(--color-text);
 
 
                 img {
@@ -440,6 +470,12 @@ main {
                 // font-size: 1.5rem;
             }
 
+            .extra_info {
+                color: var(--color-primary);
+                font-size: .8em;
+                padding-left: .5em;
+            }
+
             &.first {
                 grid-area: 1 / 1 / 2 / 2;
             }
@@ -456,6 +492,10 @@ main {
                 grid-area: 4 / 1 / 5 / 2;
             }
         }
+
+        // .summary_sub.first>.img_wrapper {
+        //     background-color: transparent;
+        // }
     }
 
     .spacer {}
@@ -466,9 +506,12 @@ main {
         font-size: 2em;
         font-weight: bold;
         text-align: center;
+
+
     }
 
-    button {
+    button.button,
+    .button {
         grid-area: 7 / 1 / 8 / 2;
         border-radius: 3rem;
     }

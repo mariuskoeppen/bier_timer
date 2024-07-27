@@ -1,24 +1,30 @@
+// use crate::calculate_surface_area::*;
 use crate::helpers::*;
 use crate::pages::*;
+use ambience::Ambience;
 use chrono::DateTime;
 use chrono::{Duration, Local};
+use drink::*;
 use leptos::*;
-use leptos_router::*;
+use timer_info::TimerInfo;
+use timer_preset::TimerPreset;
 
 #[component]
 pub fn App() -> impl IntoView {
     let drink_beer_5 = Drink::new(
+        "Bier",
         "500ml Flasche",
         "./assets/images/bier5.svg",
         Container {
             volume: milliliters_to_m3(500.0),
-            surface_area: 0.04064,
+            surface_area: 0.04064, // 0.04363705122848267 m^2
             material: ContainerMaterial::Glass,
             shape: ContainerShape::BeerBottle,
         },
         0.05,
     );
     let drink_beer_33 = Drink::new(
+        "Bier",
         "330ml Flasche",
         "./assets/images/bier5.svg",
         Container {
@@ -30,17 +36,19 @@ pub fn App() -> impl IntoView {
         0.05,
     );
     let drink_beer_5_can = Drink::new(
+        "Bier",
         "500ml Dose",
         "./assets/images/can5.svg",
         Container {
             volume: milliliters_to_m3(500.0),
-            surface_area: 0.03768,
+            surface_area: 0.03768, // 0.03825517374276292 m^2
             material: ContainerMaterial::Aluminium,
             shape: ContainerShape::Can,
         },
         0.05,
     );
     let drink_beer_33_can = Drink::new(
+        "Bier",
         "330ml Dose",
         "./assets/images/can33.svg",
         Container {
@@ -52,7 +60,8 @@ pub fn App() -> impl IntoView {
         0.05,
     );
     let drink_lemondade = Drink::new(
-        "1L Plastik-Flasche",
+        "Limonade",
+        "1L Flasche",
         "./assets/images/coke.svg",
         Container {
             volume: milliliters_to_m3(1000.0),
@@ -63,7 +72,8 @@ pub fn App() -> impl IntoView {
         0.00,
     );
     let drink_wine = Drink::new(
-        "750ml Wein-Flasche",
+        "Rotwein",
+        "750ml Flasche",
         "./assets/images/wein_rot.svg",
         Container {
             volume: milliliters_to_m3(750.0),
@@ -74,7 +84,8 @@ pub fn App() -> impl IntoView {
         0.15,
     );
     let drink_liquor = Drink::new(
-        "700ml Schnaps-Flasche",
+        "Schnaps",
+        "700ml Flasche",
         "./assets/images/vodka.svg",
         Container {
             volume: milliliters_to_m3(700.0),
@@ -84,15 +95,6 @@ pub fn App() -> impl IntoView {
         },
         0.40,
     );
-    let drinks = vec![
-        drink_beer_5.clone(),
-        drink_beer_33.clone(),
-        drink_beer_5_can.clone(),
-        drink_beer_33_can.clone(),
-        drink_wine.clone(),
-        drink_lemondade.clone(),
-        drink_liquor.clone(),
-    ];
 
     // Initial Temperatures
     let initial_kellerkalt = Ambience::new(
@@ -113,11 +115,6 @@ pub fn App() -> impl IntoView {
         Temperature::new_with_unit(30.0, TemperatureUnit::DegCelsius),
         None,
     );
-    let initial_temperatures = vec![
-        initial_kellerkalt.clone(),
-        initial_raumtemperatur.clone(),
-        initial_sommertag.clone(),
-    ];
 
     // Ambient Temperatures
     let ambient_eisfach = Ambience::new(
@@ -138,11 +135,6 @@ pub fn App() -> impl IntoView {
         Temperature::new_with_unit(5.0, TemperatureUnit::DegCelsius),
         Some(Fluid::Air),
     );
-    let ambient_temperatures = vec![
-        ambient_eisfach.clone(),
-        ambient_eisbad.clone(),
-        ambient_kuehlschrank.clone(),
-    ];
 
     // Target Temperatures
     let target_schnaps = Ambience::new(
@@ -175,13 +167,6 @@ pub fn App() -> impl IntoView {
         Temperature::new_with_unit(16.0, TemperatureUnit::DegCelsius),
         None,
     );
-    let target_temperatures = vec![
-        target_schnaps.clone(),
-        target_lemonade.clone(),
-        target_beer.clone(),
-        target_wine_white.clone(),
-        target_wine_red.clone(),
-    ];
 
     // Timer Presets
     let preset_beer = TimerPreset {
@@ -216,13 +201,52 @@ pub fn App() -> impl IntoView {
         ambient_ambience: ambient_eisfach.clone(),
         target_ambience: target_schnaps.clone(),
     };
+    let preset_beer_can = TimerPreset {
+        name: "Bier Dose 500".to_string(),
+        path_to_image: target_beer.path_to_image.clone(),
+        drink: drink_beer_5_can.clone(),
+        initial_ambience: initial_raumtemperatur.clone(),
+        ambient_ambience: ambient_eisfach.clone(),
+        target_ambience: target_beer.clone(),
+    };
+    let preset_dev = TimerPreset {
+        name: "Dev".to_string(),
+        path_to_image: target_beer.path_to_image.clone(),
+        drink: drink_beer_5_can.clone(),
+        initial_ambience: Ambience::new(
+            "dev1",
+            "./assets/images/wein_rot.svg",
+            Temperature::new_with_unit(11.0, TemperatureUnit::DegCelsius),
+            None,
+        )
+        .clone(),
+        ambient_ambience: Ambience::new(
+            "dev2",
+            "./assets/images/wein_rot.svg",
+            Temperature::new_with_unit(-50.0, TemperatureUnit::DegCelsius),
+            None,
+        )
+        .clone(),
+        target_ambience: Ambience::new(
+            "dev3",
+            "./assets/images/wein_rot.svg",
+            Temperature::new_with_unit(10.0, TemperatureUnit::DegCelsius),
+            None,
+        )
+        .clone(),
+    };
+
     let timer_presets = vec![
         preset_beer.clone(),
         preset_wine_red.clone(),
         preset_wine_white.clone(),
         preset_schnaps.clone(),
+        preset_beer_can.clone(),
+        preset_dev.clone(),
     ];
     let selected_preset_signal = create_rw_signal(preset_beer);
+
+    // leptos::logging::log!("{:#?}", drinks);
 
     // Current Time
     let current_time_signal = create_rw_signal(Local::now());
@@ -240,19 +264,7 @@ pub fn App() -> impl IntoView {
     let currently_running_timers = create_rw_signal::<Vec<TimerInfo>>(vec![]);
     provide_context(CurrentlyRunningTimers(currently_running_timers));
 
-    view! {
-        <Router>
-            <Routes>
-                <Route
-                    path="/"
-                    view=move || {
-                        view! { <Home timer_presets=timer_presets.clone() selected_preset_signal/> }
-                    }
-                />
-
-            </Routes>
-        </Router>
-    }
+    view! { <Home timer_presets=timer_presets.clone() selected_preset_signal/> }
 }
 
 #[derive(Clone)]
@@ -260,4 +272,3 @@ pub struct CurrentTime(pub RwSignal<DateTime<Local>>);
 
 #[derive(Clone)]
 pub struct CurrentlyRunningTimers(pub RwSignal<Vec<TimerInfo>>);
-

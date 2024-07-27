@@ -27,56 +27,58 @@ pub fn Home(
     // });
 
     view! {
-        <header>
-            <h1>"Bier Timer"</h1>
-        </header>
-        <main>
-            <section>
-                <h3>"Laufende Timer"</h3>
-                <div class="running_timers_wrapper">
+        <div class="main_content_container">
+            <header>
+                <h1>"Bier Timer"</h1>
+            </header>
+            <main>
+                <section>
+                    <h3>"Laufende Timer"</h3>
+                    <div class="running_timers_wrapper">
 
-                    {move || {
-                        if currently_running_timers.get().len() == 0 {
-                            view! { <p>"Erstelle unten einen neuen Timer"</p> }.into_view()
-                        } else {
-                            currently_running_timers
-                                .get()
-                                .iter()
-                                .map(|timer_info| {
-                                    view! { <TimerTile timer=timer_info.clone()/> }
-                                })
-                                .collect_view()
-                        }
-                    }}
-
-                </div>
-            </section>
-
-            <section>
-                <h3>"Neuen Timer hinzufügen"</h3>
-
-                <div class="timer_presets_wrapper">
-
-                    {timer_presets
-                        .iter()
-                        .map(|preset| {
-                            view! {
-                                <TimerPresetButton
-                                    preset=preset.clone()
-                                    modal_showing_signal
-                                    selected_preset_signal
-                                />
+                        {move || {
+                            if currently_running_timers.get().len() == 0 {
+                                view! { <p>"Erstelle unten einen neuen Timer"</p> }.into_view()
+                            } else {
+                                currently_running_timers
+                                    .get()
+                                    .iter()
+                                    .map(|timer_info| {
+                                        view! { <TimerTile timer=timer_info.clone()/> }
+                                    })
+                                    .collect_view()
                             }
-                        })
-                        .collect_view()}
+                        }}
 
-                </div>
-            </section>
+                    </div>
+                </section>
 
-            <section>
-                <h3>"Weiterführende Informationen"</h3>
-            </section>
-        </main>
+                <section>
+                    <h3>"Neuen Timer hinzufügen"</h3>
+
+                    <div class="timer_presets_wrapper">
+
+                        {timer_presets
+                            .iter()
+                            .map(|preset| {
+                                view! {
+                                    <TimerPresetButton
+                                        preset=preset.clone()
+                                        modal_showing_signal
+                                        selected_preset_signal
+                                    />
+                                }
+                            })
+                            .collect_view()}
+
+                    </div>
+                </section>
+
+            // <section>
+            // <h3>"Weiterführende Informationen"</h3>
+            // </section>
+            </main>
+        </div>
         <div
             id="preset_modal"
             class:hidden=move || !modal_showing_signal.get()
@@ -84,9 +86,6 @@ pub fn Home(
                 if e.target().expect("click target")
                     != e.current_target().expect("click current target")
                 {
-                    leptos::logging::log!(
-                        "{:#?}, {:#?}", e.target().unwrap(), e.current_target().unwrap()
-                    );
                     return;
                 }
                 modal_showing_signal.set(false);
@@ -102,13 +101,3 @@ pub fn Home(
         </div>
     }
 }
-
-// if e.target().expect("click target")
-//     != e.current_target().expect("click current target")
-// {
-//     leptos::logging::log!(
-//         "{:#?}, {:#?}", e.target().unwrap(), e.current_target().unwrap()
-//     );
-//     return;
-// }
-

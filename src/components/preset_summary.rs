@@ -1,7 +1,7 @@
 use crate::{
     app::{CurrentTime, CurrentlyRunningTimers},
     helpers::{format_chrono_duration_simple, time_until_temperature, TimerPreset},
-    TimerInfo,
+    timer_info::TimerInfo,
 };
 use leptos::*;
 
@@ -29,12 +29,17 @@ pub fn PresetSummary(
                         <img src=move || preset_signal.get().path_to_image/>
                     </div>
                     <span class="description">"Getränk"</span>
-                    <span class="info">{move || preset_signal.get().name}</span>
+                    <span class="info">
+                        {move || preset_signal.get().drink.name}
+                        <span class="extra_info">
+                            "- " {move || preset_signal.get().drink.description}
+                        </span>
+                    </span>
                 </div>
                 <div class="summary_sub second">
                     <div class="img_wrapper">
                         {move || preset_signal.get().initial_ambience.temperature.as_deg_celsius()}
-                        "° C"
+                        "°C"
                     </div>
                     <span class="description">"Ausgangstemperatur"</span>
                     <span class="info">{move || preset_signal.get().initial_ambience.name}</span>
@@ -42,7 +47,7 @@ pub fn PresetSummary(
                 <div class="summary_sub third">
                     <div class="img_wrapper">
                         {move || preset_signal.get().ambient_ambience.temperature.as_deg_celsius()}
-                        "° C"
+                        "°C"
                     </div>
                     <span class="description">"Kühltemperatur"</span>
                     <span class="info">{move || preset_signal.get().ambient_ambience.name}</span>
@@ -50,7 +55,7 @@ pub fn PresetSummary(
                 <div class="summary_sub fourth">
                     <div class="img_wrapper">
                         {move || preset_signal.get().target_ambience.temperature.as_deg_celsius()}
-                        "° C"
+                        "°C"
                     </div>
                     <span class="description">"Zieltemperatur"</span>
                     <span class="info">{move || preset_signal.get().target_ambience.name}</span>
@@ -76,4 +81,3 @@ pub fn PresetSummary(
         </div>
     }
 }
-
